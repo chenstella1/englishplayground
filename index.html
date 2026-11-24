@@ -1,0 +1,2044 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>英文遊樂園｜互動英語學習網</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & Noto Sans TC -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'Noto Sans TC', 'sans-serif'],
+                    },
+                    animation: {
+                        'shake': 'shake 0.45s cubic-bezier(.36,.07,.19,.97) both',
+                        'pop': 'pop 0.3s ease-out forwards',
+                        'fade-in': 'fadeIn 0.35s ease-out forwards',
+                        'float': 'float 3s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        shake: {
+                            '10%, 90%': { transform: 'translate3d(-2px, 0, 0)' },
+                            '20%, 80%': { transform: 'translate3d(4px, 0, 0)' },
+                            '30%, 50%, 70%': { transform: 'translate3d(-6px, 0, 0)' },
+                            '40%, 60%': { transform: 'translate3d(6px, 0, 0)' }
+                        },
+                        pop: {
+                            '0%': { transform: 'scale(0.95)', opacity: '0.8' },
+                            '50%': { transform: 'scale(1.03)' },
+                            '100%': { transform: 'scale(1)', opacity: '1' }
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-6px)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* 活潑明亮的遊樂園點點背景與觸控優化 */
+        body {
+            -webkit-tap-highlight-color: transparent;
+            background-color: #f4f9ff;
+            background-image: 
+                radial-gradient(circle at 12% 18%, rgba(56, 189, 248, 0.12) 0%, transparent 28%),
+                radial-gradient(circle at 88% 22%, rgba(251, 191, 36, 0.14) 0%, transparent 30%),
+                radial-gradient(circle at 80% 85%, rgba(52, 211, 153, 0.12) 0%, transparent 32%),
+                radial-gradient(#cbd5e1 1.3px, transparent 1.3px);
+            background-size: 100% 100%, 100% 100%, 100% 100%, 24px 24px;
+        }
+        .card-shadow {
+            box-shadow: 0 12px 28px -6px rgba(14, 116, 144, 0.08), 0 4px 12px -4px rgba(14, 116, 144, 0.04);
+        }
+        .playground-card {
+            transition: all 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .playground-card:hover {
+            transform: translateY(-6px) scale(1.015);
+        }
+        .btn-press:active {
+            transform: scale(0.96);
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-800 flex flex-col justify-between selection:bg-amber-200">
+
+    <!-- ==========================================
+         頂部全域導覽列 (Global Navigation Bar)
+         ========================================== -->
+    <header class="bg-white/90 backdrop-blur-md border-b border-sky-100 sticky top-0 z-40 shadow-sm">
+        <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
+            <!-- 左側：遊樂園 Logo 與 返回首頁按鈕 -->
+            <div class="flex items-center gap-2.5 sm:gap-3">
+                <button onclick="navigateTo('home')" class="flex items-center gap-2.5 text-left group focus:outline-none">
+                    <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-gradient-to-tr from-sky-400 via-teal-400 to-amber-300 flex items-center justify-center text-white text-xl sm:text-2xl shadow-md group-hover:rotate-6 transition-transform">
+                        🎡
+                    </div>
+                    <div>
+                        <span class="font-black text-lg sm:text-xl bg-gradient-to-r from-sky-600 to-teal-600 bg-clip-text text-transparent tracking-tight block leading-none">
+                            英文遊樂園
+                        </span>
+                        <span class="text-[11px] font-semibold text-slate-400 hidden sm:inline-block mt-0.5">
+                            English Playground
+                        </span>
+                    </div>
+                </button>
+
+                <!-- 明顯的返回首頁按鈕（在非首頁時顯示） -->
+                <button id="btn-back-home" onclick="navigateTo('home')" class="hidden ml-1 sm:ml-3 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-800 border border-amber-200 font-bold text-xs sm:text-sm flex items-center gap-1.5 transition-all btn-press shadow-sm">
+                    <span>🏠</span>
+                    <span>返回英文遊樂園首頁</span>
+                </button>
+            </div>
+
+            <!-- 右側：當前模組標籤與全域音效開關 -->
+            <div class="flex items-center gap-2">
+                <span id="nav-current-badge" class="hidden md:inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-sky-50 text-sky-700 border border-sky-100">
+                    🎠 園區大廳
+                </span>
+
+                <!-- 全域音效開關 -->
+                <button id="btn-sound" onclick="toggleSound()" title="切換遊戲音效" class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors btn-press flex items-center gap-1.5" aria-label="切換音效">
+                    <svg id="icon-sound-on" class="w-5 h-5 text-sky-600" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                    </svg>
+                    <svg id="icon-sound-off" class="w-5 h-5 text-slate-400 hidden" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+                    </svg>
+                    <span id="label-sound" class="text-xs font-bold text-slate-600 hidden sm:inline">音效開</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ==========================================
+         主要頁面容器 (SPA Views)
+         ========================================== -->
+    <main class="flex-grow max-w-5xl w-full mx-auto px-4 py-6 sm:py-8 flex flex-col justify-center">
+
+        <!-- ******************************************
+             VIEW 0：英文遊樂園主首頁 (Home Hub)
+             ****************************************** -->
+        <section id="page-home" class="w-full animate-fade-in">
+            <!-- 歡迎橫幅區 -->
+            <div class="bg-white/95 rounded-3xl p-6 sm:p-10 mb-8 card-shadow border-2 border-sky-100 text-center relative overflow-hidden">
+                <!-- 裝飾氣球與雲朵 -->
+                <div class="hidden sm:block absolute top-4 left-6 text-4xl animate-float select-none opacity-85">🎈</div>
+                <div class="hidden sm:block absolute bottom-4 right-8 text-4xl animate-float select-none opacity-85" style="animation-delay: 1.2s;">🎪</div>
+
+                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-100 text-amber-800 text-xs sm:text-sm font-extrabold mb-4 shadow-sm">
+                    <span>✨ 歡迎來到快樂學習基地 ✨</span>
+                </div>
+                <h1 class="text-3xl sm:text-5xl font-black text-slate-800 tracking-tight mb-3">
+                    歡迎來到 <span class="bg-gradient-to-r from-sky-500 via-teal-500 to-emerald-500 bg-clip-text text-transparent">英文遊樂園</span>！
+                </h1>
+                <p class="text-slate-600 text-sm sm:text-lg max-w-2xl mx-auto leading-relaxed">
+                    挑選你喜歡的學習設施開始闖關吧！從基礎單字發音、英文釋義理解到核心文法圖解，一步步輕鬆掌握 22 個單元必考重點！
+                </p>
+            </div>
+
+            <!-- 三大主題闖關卡片區 -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
+                
+                <!-- 卡片 1：單字先背好 (薄荷綠 / 晴空藍) -->
+                <button onclick="navigateTo('vocab')" class="playground-card text-left bg-white rounded-3xl p-6 sm:p-7 card-shadow border-2 border-emerald-100 hover:border-emerald-400 flex flex-col justify-between group relative overflow-hidden">
+                    <div class="absolute -right-6 -top-6 w-28 h-28 rounded-full bg-emerald-50 group-hover:bg-emerald-100 transition-colors"></div>
+                    <div>
+                        <div class="flex items-center justify-between mb-5 relative z-10">
+                            <span class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 font-extrabold text-xs">
+                                關卡 01
+                            </span>
+                            <span class="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-500 text-white text-3xl flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
+                                🎠
+                            </span>
+                        </div>
+                        <h2 class="text-xl sm:text-2xl font-black text-slate-800 mb-2 group-hover:text-emerald-600 transition-colors">
+                            1. 單字先背好
+                        </h2>
+                        <p class="text-slate-500 text-sm leading-relaxed mb-6">
+                            聽發音、看中文、輕鬆記憶核心單字。內含「四選一挑戰」、「消消樂配對」與「22 個單字總覽表」！
+                        </p>
+                    </div>
+                    <div class="pt-4 border-t border-slate-100 flex items-center justify-between text-emerald-600 font-extrabold text-sm">
+                        <span>進入單字互動挑戰</span>
+                        <span class="w-8 h-8 rounded-full bg-emerald-50 group-hover:bg-emerald-500 group-hover:text-white flex items-center justify-center transition-colors">➔</span>
+                    </div>
+                </button>
+
+                <!-- 卡片 2：看英文意思選中文 (暖陽黃 / 珊瑚橘) -->
+                <button onclick="navigateTo('def')" class="playground-card text-left bg-white rounded-3xl p-6 sm:p-7 card-shadow border-2 border-amber-100 hover:border-amber-400 flex flex-col justify-between group relative overflow-hidden">
+                    <div class="absolute -right-6 -top-6 w-28 h-28 rounded-full bg-amber-50 group-hover:bg-amber-100 transition-colors"></div>
+                    <div>
+                        <div class="flex items-center justify-between mb-5 relative z-10">
+                            <span class="px-3 py-1 rounded-full bg-amber-100 text-amber-800 font-extrabold text-xs">
+                                關卡 02
+                            </span>
+                            <span class="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 text-white text-3xl flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
+                                🎢
+                            </span>
+                        </div>
+                        <h2 class="text-xl sm:text-2xl font-black text-slate-800 mb-2 group-hover:text-amber-600 transition-colors">
+                            2. 看英文意思選中文
+                        </h2>
+                        <p class="text-slate-500 text-sm leading-relaxed mb-6">
+                            看英文定義與提示，選出正確中文意思。訓練用英文思考並理解單字解釋，附語音朗讀與詳解！
+                        </p>
+                    </div>
+                    <div class="pt-4 border-t border-slate-100 flex items-center justify-between text-amber-600 font-extrabold text-sm">
+                        <span>開始英文定義闖關</span>
+                        <span class="w-8 h-8 rounded-full bg-amber-50 group-hover:bg-amber-500 group-hover:text-white flex items-center justify-center transition-colors">➔</span>
+                    </div>
+                </button>
+
+                <!-- 卡片 3：文法重點區 (晴空藍 / 薰衣草紫) -->
+                <button onclick="navigateTo('grammar')" class="playground-card text-left bg-white rounded-3xl p-6 sm:p-7 card-shadow border-2 border-sky-100 hover:border-sky-400 flex flex-col justify-between group relative overflow-hidden">
+                    <div class="absolute -right-6 -top-6 w-28 h-28 rounded-full bg-sky-50 group-hover:bg-sky-100 transition-colors"></div>
+                    <div>
+                        <div class="flex items-center justify-between mb-5 relative z-10">
+                            <span class="px-3 py-1 rounded-full bg-sky-100 text-sky-800 font-extrabold text-xs">
+                                關卡 03
+                            </span>
+                            <span class="w-14 h-14 rounded-2xl bg-gradient-to-br from-sky-400 to-indigo-500 text-white text-3xl flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
+                                🏰
+                            </span>
+                        </div>
+                        <h2 class="text-xl sm:text-2xl font-black text-slate-800 mb-2 group-hover:text-sky-600 transition-colors">
+                            3. 文法重點區
+                        </h2>
+                        <p class="text-slate-500 text-sm leading-relaxed mb-6">
+                            核心句型與複合名詞規則圖解。掌握複合名詞構成、單複數變化、易混淆字解析與隨堂小測驗！
+                        </p>
+                    </div>
+                    <div class="pt-4 border-t border-slate-100 flex items-center justify-between text-sky-600 font-extrabold text-sm">
+                        <span>進入文法城堡學習</span>
+                        <span class="w-8 h-8 rounded-full bg-sky-50 group-hover:bg-sky-500 group-hover:text-white flex items-center justify-center transition-colors">➔</span>
+                    </div>
+                </button>
+
+            </div>
+        </section>
+
+        <!-- ******************************************
+             VIEW 1：模組 1 - 單字先背好 (完整英文單字互動挑戰)
+             ****************************************** -->
+        <section id="page-vocab" class="hidden w-full animate-fade-in">
+            <!-- 模組 1 頂部功能切換列 -->
+            <div class="bg-white rounded-2xl p-3 sm:p-4 mb-5 card-shadow border border-emerald-100 flex flex-wrap items-center justify-between gap-3">
+                <div class="flex items-center gap-2.5">
+                    <span class="text-2xl">🎠</span>
+                    <div>
+                        <h2 class="font-extrabold text-slate-800 text-base sm:text-lg leading-tight">單字先背好：英文單字互動挑戰</h2>
+                        <p class="text-xs text-slate-500">聽發音、看中文，熟練全部 22 個核心單字</p>
+                    </div>
+                </div>
+
+                <!-- 子分頁切換與自動發音開關 -->
+                <div class="flex flex-wrap items-center gap-2">
+                    <nav class="flex bg-slate-100 p-1 rounded-xl" role="tablist">
+                        <button id="tab-quiz" onclick="switchVocabSubMode('quiz')" class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all bg-white text-emerald-600 shadow-sm">
+                            四選一挑戰
+                        </button>
+                        <button id="tab-match" onclick="switchVocabSubMode('match')" class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all text-slate-600 hover:text-slate-900">
+                            消消樂配對
+                        </button>
+                        <button id="tab-list" onclick="switchVocabSubMode('list')" class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all text-slate-600 hover:text-slate-900">
+                            單字總覽 (22)
+                        </button>
+                    </nav>
+
+                    <!-- 自動發音開關 -->
+                    <button id="btn-auto-speak" onclick="toggleAutoSpeak()" class="px-2.5 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 text-xs font-bold flex items-center gap-1 transition-all btn-press" title="切換切換題目時是否自動朗讀單字">
+                        <span id="auto-speak-dot" class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                        <span id="auto-speak-text">自動發音: 開</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- (A) 四選一挑戰模式 (Quiz Mode) -->
+            <div id="view-quiz" class="w-full">
+                <!-- 狀態列：進度、分數、連擊、正確率 -->
+                <div class="bg-white rounded-2xl p-4 mb-5 card-shadow border border-emerald-50">
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-3 text-sm">
+                        <div class="flex items-center gap-2">
+                            <span id="quiz-mode-badge" class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700">
+                                📘 全部單字測驗
+                            </span>
+                            <span class="font-bold text-slate-700">
+                                進度：<span id="quiz-progress-text" class="text-emerald-600">1 / 22</span>
+                            </span>
+                        </div>
+
+                        <div class="flex items-center gap-3 sm:gap-5 font-semibold">
+                            <div class="flex items-center gap-1 text-amber-600" title="連擊數">
+                                <span>🔥 Combo:</span>
+                                <span id="quiz-combo" class="font-extrabold text-base">0</span>
+                            </div>
+                            <div class="flex items-center gap-1 text-emerald-600">
+                                <span>得分:</span>
+                                <span id="quiz-score" class="font-extrabold text-base">0</span>
+                            </div>
+                            <div class="flex items-center gap-1 text-slate-600">
+                                <span>正確率:</span>
+                                <span id="quiz-accuracy" class="font-extrabold text-base">100%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 進度條 -->
+                    <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                        <div id="quiz-progress-bar" class="bg-gradient-to-r from-emerald-400 to-teal-500 h-2.5 rounded-full transition-all duration-300" style="width: 4.5%"></div>
+                    </div>
+                </div>
+
+                <!-- 題目卡片區 -->
+                <div id="quiz-card" class="bg-white rounded-3xl p-6 sm:p-10 card-shadow border border-emerald-50 text-center relative overflow-hidden">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 text-slate-500 text-xs font-bold mb-4">
+                        <span>WORD CHALLENGE</span>
+                        <span id="quiz-q-num">#01</span>
+                    </div>
+
+                    <!-- 英文單字與詞性顯示 -->
+                    <div class="my-4 sm:my-6 flex flex-col items-center justify-center">
+                        <div class="flex flex-wrap items-center justify-center gap-3">
+                            <h2 id="quiz-word" class="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight break-words">
+                                electricity
+                            </h2>
+                            <!-- 發音按鈕 -->
+                            <button onclick="speakCurrentWord()" title="聽發音 (快捷鍵: S 或 空白鍵)" class="p-3 rounded-full bg-emerald-50 hover:bg-emerald-100 text-emerald-600 transition-all btn-press shadow-sm border border-emerald-200 group" aria-label="朗讀英文單字">
+                                <svg class="w-6 h-6 sm:w-7 sm:h-7 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                                </svg>
+                            </button>
+                        </div>
+                        <!-- 詞性標籤 -->
+                        <div id="quiz-pos-container" class="mt-2.5 h-7 flex items-center justify-center">
+                            <span id="quiz-pos" class="px-3 py-0.5 rounded-md bg-teal-50 text-teal-700 font-bold text-sm border border-teal-100">
+                                n.
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- 即時答題回饋提示區 -->
+                    <div id="quiz-feedback" class="min-h-[2.25rem] mb-4 flex items-center justify-center text-sm sm:text-base font-bold rounded-xl px-4 py-1.5 transition-all opacity-0">
+                    </div>
+
+                    <!-- 四個中文選項按鈕 -->
+                    <div id="quiz-options" class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 max-w-2xl mx-auto">
+                    </div>
+
+                    <!-- 底部操作提示 -->
+                    <div class="mt-6 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400 border-t border-slate-100 pt-4">
+                        <span>💡 點擊正確的中文意思（電腦版支援鍵盤 1~4 選擇，S 鍵聽發音）</span>
+                        <button id="btn-next-question" onclick="nextQuestion()" class="hidden px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md transition-all btn-press">
+                            下一題 ➔
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 測驗結束結算畫面 (Quiz Result View) -->
+            <div id="view-result" class="hidden w-full animate-fade-in">
+                <div class="bg-white rounded-3xl p-6 sm:p-10 card-shadow border border-emerald-50 text-center">
+                    <div class="w-20 h-20 mx-auto mb-4 rounded-2xl bg-amber-100 text-amber-500 flex items-center justify-center text-4xl shadow-inner">
+                        🏆
+                    </div>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-800 mb-1">單字挑戰完成！</h2>
+                    <p class="text-slate-500 text-sm sm:text-base mb-6">太棒了，你已經完成了本次單字記憶挑戰！</p>
+
+                    <div class="grid grid-cols-3 gap-3 sm:gap-4 max-w-lg mx-auto mb-8">
+                        <div class="bg-sky-50/80 border border-sky-100 rounded-2xl p-3 sm:p-4">
+                            <div class="text-xs text-sky-600 font-bold mb-1">總得分</div>
+                            <div id="result-score" class="text-2xl sm:text-3xl font-extrabold text-sky-700">0</div>
+                        </div>
+                        <div class="bg-emerald-50/80 border border-emerald-100 rounded-2xl p-3 sm:p-4">
+                            <div class="text-xs text-emerald-600 font-bold mb-1">答對題數</div>
+                            <div id="result-correct-count" class="text-2xl sm:text-3xl font-extrabold text-emerald-700">0 / 22</div>
+                        </div>
+                        <div class="bg-purple-50/80 border border-purple-100 rounded-2xl p-3 sm:p-4">
+                            <div class="text-xs text-purple-600 font-bold mb-1">正確率</div>
+                            <div id="result-accuracy" class="text-2xl sm:text-3xl font-extrabold text-purple-700">100%</div>
+                        </div>
+                    </div>
+
+                    <!-- 錯題複習清單 -->
+                    <div id="result-mistakes-section" class="max-w-2xl mx-auto mb-8 text-left hidden">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="font-bold text-rose-600 flex items-center gap-1.5 text-base sm:text-lg">
+                                <span>📝 本次錯題複習清單</span>
+                                <span id="result-mistake-badge" class="px-2 py-0.5 text-xs bg-rose-100 text-rose-700 rounded-full">0 題</span>
+                            </h3>
+                            <span class="text-xs text-slate-400">點擊喇叭可聽發音</span>
+                        </div>
+                        <div id="result-mistakes-list" class="bg-rose-50/50 border border-rose-100 rounded-2xl divide-y divide-rose-100 max-h-64 overflow-y-auto">
+                        </div>
+                    </div>
+
+                    <!-- 全對慶祝訊息 -->
+                    <div id="result-perfect-banner" class="hidden max-w-md mx-auto mb-8 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-700 font-bold text-sm sm:text-base">
+                        🎉 完美通關！所有單字都完全答對，沒有任何錯題！
+                    </div>
+
+                    <!-- 操作按鈕群 -->
+                    <div class="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
+                        <button id="btn-retry-mistakes" onclick="startQuiz(true)" class="hidden px-6 py-3.5 rounded-2xl bg-rose-500 hover:bg-rose-600 text-white font-bold shadow-md shadow-rose-200 transition-all btn-press flex items-center gap-2">
+                            <span>🎯 只練習錯題</span>
+                        </button>
+                        <button onclick="startQuiz(false)" class="px-6 py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-md shadow-emerald-200 transition-all btn-press flex items-center gap-2">
+                            <span>🔄 重新挑戰全部</span>
+                        </button>
+                        <button onclick="navigateTo('def')" class="px-6 py-3.5 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white font-bold shadow-md shadow-amber-200 transition-all btn-press">
+                            🎢 挑戰看英文意思選中文
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- (B) 消消樂配對模式 (Matching Mode) -->
+            <div id="view-match" class="hidden w-full animate-fade-in">
+                <div class="bg-white rounded-2xl p-4 mb-5 card-shadow border border-emerald-50 flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-base sm:text-lg flex items-center gap-2">
+                            <span>🧩 單字消消樂（5 組配對）</span>
+                            <span id="match-round-badge" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-teal-100 text-teal-700">第 1 回合</span>
+                        </h3>
+                        <p class="text-xs text-slate-500 mt-0.5">先點擊左邊「英文單字」，再點擊右邊對應的「中文意思」進行消除！</p>
+                    </div>
+
+                    <div class="flex items-center gap-4">
+                        <div class="text-right">
+                            <div class="text-xs text-slate-400 font-semibold">本回合配對</div>
+                            <div id="match-progress" class="font-extrabold text-emerald-600 text-base">0 / 5 組</div>
+                        </div>
+                        <button onclick="initMatchRound(true)" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs sm:text-sm transition-all btn-press">
+                            🔀 換一組題目
+                        </button>
+                    </div>
+                </div>
+
+                <div id="match-toast" class="mb-4 text-center text-sm font-bold py-2 px-4 rounded-xl bg-sky-50 text-sky-700 border border-sky-100 transition-all">
+                    請選擇一張英文卡片與一張中文卡片進行配對
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 sm:gap-6">
+                    <div class="space-y-3">
+                        <div class="text-center text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">English 英文</div>
+                        <div id="match-en-col" class="flex flex-col gap-3"></div>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="text-center text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Chinese 中文</div>
+                        <div id="match-zh-col" class="flex flex-col gap-3"></div>
+                    </div>
+                </div>
+
+                <div id="match-complete-box" class="hidden mt-6 bg-emerald-50 border border-emerald-200 rounded-2xl p-5 text-center animate-pop">
+                    <p class="text-emerald-800 font-extrabold text-lg mb-3">🎉 太厲害了！這 5 組單字全部配對成功！</p>
+                    <button onclick="initMatchRound(false)" class="px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-md transition-all btn-press">
+                        繼續下一回合 ➔
+                    </button>
+                </div>
+            </div>
+
+            <!-- (C) 單字總覽表 (Vocabulary List Mode) -->
+            <div id="view-list" class="hidden w-full animate-fade-in">
+                <div class="bg-white rounded-2xl p-4 sm:p-5 mb-5 card-shadow border border-emerald-50 flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-lg">📚 完整單字總覽表（共 22 個去重單字）</h3>
+                        <p class="text-xs text-slate-500">點擊單字卡片或喇叭圖示即可聆聽標準英語發音，隨時複習！</p>
+                    </div>
+                    <div class="flex items-center gap-2 w-full sm:w-auto">
+                        <input id="search-vocab" type="text" oninput="renderVocabList()" placeholder="搜尋英文或中文..." class="w-full sm:w-56 px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100">
+                        <button onclick="switchVocabSubMode('quiz')" class="whitespace-nowrap px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-sm transition-all btn-press">
+                            開始測驗
+                        </button>
+                    </div>
+                </div>
+
+                <div id="vocab-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+                </div>
+            </div>
+        </section>
+
+        <!-- ******************************************
+             VIEW 2：模組 2 - 看英文意思選中文 (English Definition Quiz)
+             ****************************************** -->
+        <section id="page-def" class="hidden w-full animate-fade-in">
+            <!-- 模組 2 頂部標題與狀態列 -->
+            <div class="bg-white rounded-2xl p-4 mb-5 card-shadow border border-amber-100">
+                <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                    <div class="flex items-center gap-2.5">
+                        <span class="text-2xl">🎢</span>
+                        <div>
+                            <h2 class="font-extrabold text-slate-800 text-base sm:text-lg leading-tight">看英文意思選中文</h2>
+                            <p class="text-xs text-slate-500">閱讀英文定義與線索，選出最符合的中文意思</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3 sm:gap-4 text-sm font-semibold">
+                        <span id="def-mode-badge" class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800">
+                            📖 全部英文定義
+                        </span>
+                        <span class="font-bold text-slate-700">
+                            進度：<span id="def-progress-text" class="text-amber-600">1 / 22</span>
+                        </span>
+                        <span class="text-emerald-600">
+                            得分: <span id="def-score" class="font-extrabold text-base">0</span>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- 進度條 -->
+                <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                    <div id="def-progress-bar" class="bg-gradient-to-r from-amber-400 to-orange-500 h-2.5 rounded-full transition-all duration-300" style="width: 4.5%"></div>
+                </div>
+            </div>
+
+            <!-- 英文定義測驗卡片區 -->
+            <div id="def-quiz-view" class="bg-white rounded-3xl p-6 sm:p-10 card-shadow border border-amber-100 text-center relative overflow-hidden">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 text-amber-700 text-xs font-bold mb-4 border border-amber-100">
+                    <span>ENGLISH DEFINITION CLUE</span>
+                    <span id="def-q-num">#01</span>
+                </div>
+
+                <!-- 英文釋義句子與朗讀按鈕 -->
+                <div class="my-4 sm:my-6 max-w-2xl mx-auto">
+                    <div class="bg-amber-50/60 border-2 border-amber-100 rounded-2xl p-5 sm:p-6 relative">
+                        <p id="def-clue-text" class="text-lg sm:text-2xl font-bold text-slate-800 leading-relaxed">
+                            "A form of energy used to power lights, computers, and machines."
+                        </p>
+                        <div class="mt-4 flex items-center justify-center gap-2">
+                            <button onclick="speakCurrentDef()" class="px-4 py-2 rounded-xl bg-white hover:bg-amber-100 text-amber-700 border border-amber-200 font-bold text-xs sm:text-sm flex items-center gap-1.5 shadow-sm transition-all btn-press">
+                                <span>🔊</span>
+                                <span>朗讀英文解釋</span>
+                            </button>
+                            <span id="def-pos-hint" class="px-3 py-1.5 rounded-xl bg-white text-slate-500 border border-slate-200 text-xs font-bold">
+                                詞性提示: n.
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 答題後的單字揭曉與回饋區 -->
+                <div id="def-feedback" class="min-h-[3.25rem] mb-4 flex flex-col items-center justify-center text-sm sm:text-base font-bold rounded-2xl px-4 py-2.5 transition-all opacity-0 max-w-2xl mx-auto">
+                </div>
+
+                <!-- 四個中文選項 -->
+                <div id="def-options" class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 max-w-2xl mx-auto">
+                </div>
+
+                <!-- 底部操作列 -->
+                <div class="mt-6 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400 border-t border-slate-100 pt-4">
+                    <span>💡 根據上方英文描述，選出對應的中文意思（支援鍵盤 1~4 鍵）</span>
+                    <button id="btn-def-next" onclick="nextDefQuestion()" class="hidden px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-sm shadow-md transition-all btn-press">
+                        下一題 ➔
+                    </button>
+                </div>
+            </div>
+
+            <!-- 模組 2 測驗結算畫面 -->
+            <div id="def-result-view" class="hidden bg-white rounded-3xl p-6 sm:p-10 card-shadow border border-amber-100 text-center animate-fade-in">
+                <div class="w-20 h-20 mx-auto mb-4 rounded-2xl bg-amber-100 text-amber-500 flex items-center justify-center text-4xl shadow-inner">
+                    🌟
+                </div>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-800 mb-1">英文定義理解測驗完成！</h2>
+                <p class="text-slate-500 text-sm sm:text-base mb-6">你已經學會如何用英文解釋來理解這些單字了！</p>
+
+                <div class="grid grid-cols-3 gap-3 sm:gap-4 max-w-lg mx-auto mb-8">
+                    <div class="bg-amber-50 border border-amber-100 rounded-2xl p-3 sm:p-4">
+                        <div class="text-xs text-amber-700 font-bold mb-1">總得分</div>
+                        <div id="def-result-score" class="text-2xl sm:text-3xl font-extrabold text-amber-600">0</div>
+                    </div>
+                    <div class="bg-emerald-50 border border-emerald-100 rounded-2xl p-3 sm:p-4">
+                        <div class="text-xs text-emerald-600 font-bold mb-1">答對題數</div>
+                        <div id="def-result-correct" class="text-2xl sm:text-3xl font-extrabold text-emerald-700">0 / 22</div>
+                    </div>
+                    <div class="bg-sky-50 border border-sky-100 rounded-2xl p-3 sm:p-4">
+                        <div class="text-xs text-sky-600 font-bold mb-1">正確率</div>
+                        <div id="def-result-acc" class="text-2xl sm:text-3xl font-extrabold text-sky-700">100%</div>
+                    </div>
+                </div>
+
+                <!-- 模組 2 錯題複習清單 -->
+                <div id="def-mistakes-section" class="max-w-2xl mx-auto mb-8 text-left hidden">
+                    <h3 class="font-bold text-rose-600 flex items-center gap-1.5 text-base sm:text-lg mb-3">
+                        <span>📝 定義測驗錯題複習</span>
+                        <span id="def-mistake-badge" class="px-2 py-0.5 text-xs bg-rose-100 text-rose-700 rounded-full">0 題</span>
+                    </h3>
+                    <div id="def-mistakes-list" class="bg-rose-50/50 border border-rose-100 rounded-2xl divide-y divide-rose-100 max-h-72 overflow-y-auto">
+                    </div>
+                </div>
+
+                <div id="def-perfect-banner" class="hidden max-w-md mx-auto mb-8 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-700 font-bold text-sm sm:text-base">
+                    🎉 太神啦！全部 22 題英文定義測驗全對通關！
+                </div>
+
+                <div class="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
+                    <button id="btn-def-retry-mistakes" onclick="startDefQuiz(true)" class="hidden px-6 py-3.5 rounded-2xl bg-rose-500 hover:bg-rose-600 text-white font-bold shadow-md transition-all btn-press">
+                        🎯 只練習錯題
+                    </button>
+                    <button onclick="startDefQuiz(false)" class="px-6 py-3.5 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white font-bold shadow-md transition-all btn-press">
+                        🔄 重新測驗全部
+                    </button>
+                    <button onclick="navigateTo('grammar')" class="px-6 py-3.5 rounded-2xl bg-sky-600 hover:bg-sky-700 text-white font-bold shadow-md transition-all btn-press">
+                        🏰 前往文法重點區
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ******************************************
+             VIEW 3：模組 3 - 文法重點區 (Grammar Focus & Mini-Quiz)
+             ****************************************** -->
+        <section id="page-grammar" class="hidden w-full animate-fade-in space-y-6">
+            <!-- 模組 3 頂部橫幅 -->
+            <div class="bg-white rounded-3xl p-6 sm:p-8 card-shadow border border-sky-100 flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center gap-3.5">
+                    <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-sky-400 to-indigo-500 text-white text-3xl flex items-center justify-center shadow-md shrink-0">
+                        🏰
+                    </div>
+                    <div>
+                        <h2 class="text-xl sm:text-2xl font-black text-slate-800">文法重點區：核心規則圖解</h2>
+                        <p class="text-slate-500 text-xs sm:text-sm mt-0.5">結合本單元 22 個單字，輕鬆掌握複合名詞結構與易混淆字用法！</p>
+                    </div>
+                </div>
+                <span class="px-3.5 py-1.5 rounded-full bg-sky-50 text-sky-700 font-bold text-xs border border-sky-100">
+                    共 2 大文法圖解 + 4 題隨堂小測驗
+                </span>
+            </div>
+
+            <!-- 重點一：複合名詞 (Compound Nouns) 的構成方式與單複數變化 -->
+            <div class="bg-white rounded-3xl p-6 sm:p-8 card-shadow border border-sky-100">
+                <div class="flex items-center gap-2.5 mb-4">
+                    <span class="px-3 py-1 rounded-xl bg-sky-600 text-white font-extrabold text-xs sm:text-sm">重點一</span>
+                    <h3 class="text-lg sm:text-xl font-black text-slate-800">複合名詞 (Compound Nouns) 的構成與單複數規則</h3>
+                </div>
+
+                <p class="text-slate-600 text-sm sm:text-base leading-relaxed mb-5">
+                    把<strong>兩個（或以上）的單字組合在一起</strong>，形成一個具有全新特定意義的名詞，就叫做<strong>複合名詞 (compound noun)</strong>。本單元有非常多實用的複合名詞，常見有三大組合公式：
+                </p>
+
+                <!-- 三大公式圖解卡片 -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <!-- 公式 1 -->
+                    <div class="bg-sky-50/70 border border-sky-100 rounded-2xl p-4">
+                        <div class="text-xs font-extrabold text-sky-600 uppercase mb-1">公式 A</div>
+                        <div class="font-black text-slate-800 text-base mb-2">名詞 + 名詞 (N. + N.)</div>
+                        <p class="text-xs text-slate-500 mb-3">第一個名詞用來說明「種類、用途或地點」。</p>
+                        <ul class="space-y-1.5 text-sm">
+                            <li class="flex items-center justify-between bg-white px-3 py-1.5 rounded-lg border border-sky-100">
+                                <span class="font-bold text-slate-800">police station</span>
+                                <span class="text-xs text-slate-500">警察局</span>
+                            </li>
+                            <li class="flex items-center justify-between bg-white px-3 py-1.5 rounded-lg border border-sky-100">
+                                <span class="font-bold text-slate-800">computer room</span>
+                                <span class="text-xs text-slate-500">電腦教室</span>
+                            </li>
+                            <li class="flex items-center justify-between bg-white px-3 py-1.5 rounded-lg border border-sky-100">
+                                <span class="font-bold text-slate-800">post office</span>
+                                <span class="text-xs text-slate-500">郵局</span>
+                            </li>
+                            <li class="flex items-center justify-between bg-white px-3 py-1.5 rounded-lg border border-sky-100">
+                                <span class="font-bold text-slate-800">wildlife park</span>
+                                <span class="text-xs text-slate-500">野生動物園</span>
+                            </li>
+                            <li class="flex items-center justify-between bg-white px-3 py-1.5 rounded-lg border border-sky-100">
+                                <span class="font-bold text-slate-800">rubbish dump</span>
+                                <span class="text-xs text-slate-500">垃圾場</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- 公式 2 -->
+                    <div class="bg-teal-50/70 border border-teal-100 rounded-2xl p-4">
+                        <div class="text-xs font-extrabold text-teal-600 uppercase mb-1">公式 B</div>
+                        <div class="font-black text-slate-800 text-base mb-2">動名詞 (V-ing) + 名詞</div>
+                        <p class="text-xs text-slate-500 mb-3">V-ing 表示該物品或場所「用來做什麼動作」。</p>
+                        <div class="bg-white p-3.5 rounded-xl border border-teal-100 mb-3">
+                            <div class="font-black text-teal-700 text-base">swimming pool</div>
+                            <div class="text-xs text-slate-500 mt-1">= a pool for swimming（用來游泳的池子 → 游泳池）</div>
+                        </div>
+                        <div class="text-xs text-slate-500 bg-white/80 p-3 rounded-xl border border-teal-100">
+                            💡 <strong>延伸例子：</strong><br>
+                            • <strong>living room</strong>（客廳）<br>
+                            • <strong>washing machine</strong>（洗衣機）
+                        </div>
+                    </div>
+
+                    <!-- 公式 3 -->
+                    <div class="bg-indigo-50/70 border border-indigo-100 rounded-2xl p-4">
+                        <div class="text-xs font-extrabold text-indigo-600 uppercase mb-1">公式 C</div>
+                        <div class="font-black text-slate-800 text-base mb-2">形容詞 + 名詞 (Adj. + N.)</div>
+                        <p class="text-xs text-slate-500 mb-3">用形容詞描述後面名詞的特徵或能源屬性。</p>
+                        <ul class="space-y-2 text-sm">
+                            <li class="bg-white p-2.5 rounded-xl border border-indigo-100">
+                                <div class="font-bold text-slate-800">solar panel <span class="text-xs font-normal text-slate-500">太陽能板</span></div>
+                                <div class="text-xs text-indigo-600 mt-0.5">solar (adj. 太陽的) + panel (n. 面板)</div>
+                            </li>
+                            <li class="bg-white p-2.5 rounded-xl border border-indigo-100">
+                                <div class="font-bold text-slate-800">alternative energy <span class="text-xs font-normal text-slate-500">替代能源</span></div>
+                                <div class="text-xs text-indigo-600 mt-0.5">alternative (adj. 替代的) + energy (n. 能源)</div>
+                            </li>
+                            <li class="bg-white p-2.5 rounded-xl border border-indigo-100">
+                                <div class="font-bold text-slate-800">wooden beams <span class="text-xs font-normal text-slate-500">木樑</span></div>
+                                <div class="text-xs text-indigo-600 mt-0.5">wooden (adj. 木頭製的) + beams (n. 樑柱)</div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- 單複數變化黄金法則 -->
+                <div class="bg-amber-50 border-2 border-amber-200 rounded-2xl p-4 sm:p-5">
+                    <h4 class="font-black text-amber-900 text-sm sm:text-base flex items-center gap-2 mb-2">
+                        <span>👑 複合名詞「變複數」黃金法則：</span>
+                    </h4>
+                    <p class="text-xs sm:text-sm text-amber-800 leading-relaxed">
+                        複合名詞變成複數時，<strong>通常只在「最後一個核心名詞」字尾加 -s / -es</strong>，前面的修飾字保持單數原形！<br>
+                        ✅ 正確：two <strong>swimming pools</strong>（兩座游泳池）、many <strong>solar panels</strong>（許多太陽能板）、three <strong>police stations</strong>（三間警察局）<br>
+                        ❌ 錯誤：<span class="line-through">swimmings pool</span>、<span class="line-through">solars panel</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- 重點二：易混淆字與多義字解析 -->
+            <div class="bg-white rounded-3xl p-6 sm:p-8 card-shadow border border-sky-100">
+                <div class="flex items-center gap-2.5 mb-5">
+                    <span class="px-3 py-1 rounded-xl bg-teal-600 text-white font-extrabold text-xs sm:text-sm">重點二</span>
+                    <h3 class="text-lg sm:text-xl font-black text-slate-800">易混淆字與一字多義解析</h3>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <!-- 比較 1: rubbish vs litter -->
+                    <div class="rounded-2xl border border-slate-200 p-4 sm:p-5 bg-slate-50/50">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="font-black text-base text-rose-600">rubbish vs. litter</span>
+                            <span class="text-xs px-2 py-0.5 rounded bg-rose-100 text-rose-700 font-bold">垃圾比一比</span>
+                        </div>
+                        <div class="space-y-2.5 text-xs sm:text-sm text-slate-600">
+                            <div class="bg-white p-3 rounded-xl border border-slate-100">
+                                <strong class="text-slate-800">1. rubbish (n. 不可數)：</strong><br>
+                                泛指家中或垃圾桶裡「要丟棄的廢棄物」，常搭配 <strong>rubbish dump（垃圾場）</strong>。
+                            </div>
+                            <div class="bg-white p-3 rounded-xl border border-slate-100">
+                                <strong class="text-slate-800">2. litter (n. / v.)：</strong><br>
+                                指「隨手亂丟在公共場所地上的紙屑垃圾」，也可當動詞「亂丟垃圾」（例：<em>Don't litter!</em> 請勿亂丟垃圾！）。
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 比較 2: spring 的三種意思 -->
+                    <div class="rounded-2xl border border-slate-200 p-4 sm:p-5 bg-slate-50/50">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="font-black text-base text-emerald-600">spring 的三種意思</span>
+                            <span class="text-xs px-2 py-0.5 rounded bg-emerald-100 text-emerald-700 font-bold">一字多義</span>
+                        </div>
+                        <p class="text-xs text-slate-500 mb-2.5">這個字在閱讀測驗超常出現，記得看上下文判斷：</p>
+                        <ul class="space-y-2 text-xs sm:text-sm">
+                            <li class="bg-white p-2.5 rounded-xl border border-slate-100">
+                                🌸 <strong>春天：</strong>Flowers bloom in <em>spring</em>.（花在春天盛開。）
+                            </li>
+                            <li class="bg-white p-2.5 rounded-xl border border-slate-100">
+                                ♨️ <strong>泉水 / 溫泉：</strong>hot <em>spring</em>（溫泉）
+                            </li>
+                            <li class="bg-white p-2.5 rounded-xl border border-slate-100">
+                                🌀 <strong>彈簧：</strong>The bed has metal <em>springs</em>.（這張床有金屬彈簧。）
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- 比較 3: drop 的動詞用法 -->
+                    <div class="rounded-2xl border border-slate-200 p-4 sm:p-5 bg-slate-50/50">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="font-black text-base text-sky-600">drop (v.) 的用法</span>
+                            <span class="text-xs px-2 py-0.5 rounded bg-sky-100 text-sky-700 font-bold">動詞變化</span>
+                        </div>
+                        <div class="space-y-2.5 text-xs sm:text-sm text-slate-600">
+                            <div class="bg-white p-3 rounded-xl border border-slate-100">
+                                <strong class="text-slate-800">意思：</strong>丟下、使掉落、下降。
+                            </div>
+                            <div class="bg-white p-3 rounded-xl border border-slate-100">
+                                <strong class="text-slate-800">⚠️ 拼字變化注意：</strong><br>
+                                過去式與現在分詞要<strong>重複字尾 p</strong>：<br>
+                                drop ➔ <strong>dropped</strong> / <strong>dropping</strong>
+                            </div>
+                            <div class="bg-white p-3 rounded-xl border border-slate-100">
+                                <strong class="text-slate-800">例句：</strong><br>
+                                Don't <em>drop</em> litter on the ground.（別把垃圾掉在地上。）
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 重點三：互動隨堂小測驗 (4 題) -->
+            <div class="bg-white rounded-3xl p-6 sm:p-8 card-shadow border-2 border-indigo-100">
+                <div class="flex flex-wrap items-center justify-between gap-2 mb-5">
+                    <div class="flex items-center gap-2.5">
+                        <span class="px-3 py-1 rounded-xl bg-indigo-600 text-white font-extrabold text-xs sm:text-sm">重點三</span>
+                        <h3 class="text-lg sm:text-xl font-black text-slate-800">文法隨堂小試身手（即時解析）</h3>
+                    </div>
+                    <button onclick="resetGrammarQuiz()" class="px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-all btn-press">
+                        🔄 重置隨堂測驗
+                    </button>
+                </div>
+
+                <div id="grammar-quiz-container" class="space-y-5">
+                    <!-- 隨堂測驗題目由 JS 動態渲染 -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 頁尾 -->
+    <footer class="text-center py-5 text-xs text-slate-400">
+        🎡 英文遊樂園 English Playground・快樂學英文・支援手機、平板與電腦操作
+    </footer>
+
+    <!-- ==========================================
+         JavaScript 核心資料庫與互動邏輯
+         ========================================== -->
+    <script>
+        // 1. 完整 22 個去重單字庫（包含詞性、中文與專為學生撰寫的英文定義/線索）
+        const VOCABULARY = [
+            {
+                id: 1,
+                en: "electricity",
+                pos: "",
+                zh: "電力；電",
+                def: "A form of energy used to power lights, computers, and machines."
+            },
+            {
+                id: 2,
+                en: "solar panel",
+                pos: "",
+                zh: "太陽能板",
+                def: "A flat device that collects energy from the sun to make electricity."
+            },
+            {
+                id: 3,
+                en: "fossil fuel",
+                pos: "",
+                zh: "化石燃料",
+                def: "Coal, oil, or natural gas formed underground from ancient plants and animals."
+            },
+            {
+                id: 4,
+                en: "alternative energy",
+                pos: "",
+                zh: "替代能源",
+                def: "Clean power from wind, water, or the sun used instead of coal or oil."
+            },
+            {
+                id: 5,
+                en: "wooden beams",
+                pos: "",
+                zh: "木樑",
+                def: "Long, strong pieces of wood used to support the roof or ceiling of a building."
+            },
+            {
+                id: 6,
+                en: "skylight",
+                pos: "",
+                zh: "天窗",
+                def: "A window built into a roof to let natural sunlight enter a room."
+            },
+            {
+                id: 7,
+                en: "mud",
+                pos: "",
+                zh: "泥土；泥巴",
+                def: "Soft, wet earth or soil mixed with water."
+            },
+            {
+                id: 8,
+                en: "spring",
+                pos: "",
+                zh: "春天；泉水；彈簧",
+                def: "The season after winter, a place where water comes up from the ground, or a coiled metal wire."
+            },
+            {
+                id: 9,
+                en: "compound noun",
+                pos: "n.",
+                zh: "複合名詞",
+                def: "A noun made up of two or more words joined together, like 'swimming pool'."
+            },
+            {
+                id: 10,
+                en: "wildlife",
+                pos: "n.",
+                zh: "野生動物",
+                def: "Wild animals and birds living freely in nature, not kept as pets."
+            },
+            {
+                id: 11,
+                en: "park",
+                pos: "n.",
+                zh: "公園",
+                def: "A public green area in a town where people go to walk, play, and relax."
+            },
+            {
+                id: 12,
+                en: "rubbish",
+                pos: "n.",
+                zh: "垃圾",
+                def: "Waste material or unwanted things that you throw away."
+            },
+            {
+                id: 13,
+                en: "dump",
+                pos: "n.",
+                zh: "垃圾場",
+                def: "A place where large amounts of waste and unwanted things are left."
+            },
+            {
+                id: 14,
+                en: "swimming pool",
+                pos: "n.",
+                zh: "游泳池",
+                def: "A large man-made structure filled with water for people to swim in."
+            },
+            {
+                id: 15,
+                en: "police station",
+                pos: "n.",
+                zh: "警察局",
+                def: "The local office where police officers work and help keep people safe."
+            },
+            {
+                id: 16,
+                en: "computer room",
+                pos: "n.",
+                zh: "電腦教室",
+                def: "A special classroom at school equipped with many computers for students."
+            },
+            {
+                id: 17,
+                en: "post office",
+                pos: "n.",
+                zh: "郵局",
+                def: "A public building where you can buy stamps and send letters or parcels."
+            },
+            {
+                id: 18,
+                en: "amazing",
+                pos: "adj.",
+                zh: "令人驚奇的",
+                def: "So wonderful, surprising, or impressive that it makes you say 'Wow!'."
+            },
+            {
+                id: 19,
+                en: "litter",
+                pos: "n./v.",
+                zh: "垃圾；亂丟垃圾",
+                def: "Small pieces of trash left on the ground in public places, or to drop trash carelessly."
+            },
+            {
+                id: 20,
+                en: "drop",
+                pos: "v.",
+                zh: "丟下；掉落",
+                def: "To let something fall down from your hand to the ground."
+            },
+            {
+                id: 21,
+                en: "wildlife park",
+                pos: "n.",
+                zh: "野生動物園",
+                def: "A large outdoor area where wild animals move freely and visitors can watch them."
+            },
+            {
+                id: 22,
+                en: "rubbish dump",
+                pos: "n.",
+                zh: "垃圾場",
+                def: "An outdoor site where trucks bring garbage from a town or city to pile up."
+            }
+        ];
+
+        // 文法隨堂小測驗題庫
+        const GRAMMAR_QUESTIONS = [
+            {
+                id: 1,
+                question: "1. 學校裡新建了兩座「游泳池」，下列哪一個英文複數寫法才正確？",
+                options: [
+                    "two swimmings pool",
+                    "two swimming pools",
+                    "two swimmings pools",
+                    "two swim pool"
+                ],
+                answerIndex: 1,
+                explanation: "✅ 正確答案是 two swimming pools！複合名詞變複數時，只在最後一個核心名詞 (pool) 字尾加 -s，前面的修飾字 (swimming) 保持原形。"
+            },
+            {
+                id: 2,
+                question: "2. 下列哪一個複合名詞是由「形容詞 + 名詞 (Adj. + N.)」所組成的？",
+                options: [
+                    "police station",
+                    "computer room",
+                    "solar panel",
+                    "post office"
+                ],
+                answerIndex: 2,
+                explanation: "✅ 正確答案是 solar panel！solar 是形容詞（太陽的），panel 是名詞（面板）。其他三個選項都是「名詞 + 名詞」的組合。"
+            },
+            {
+                id: 3,
+                question: "3. 公園告示牌寫著 “Please do not ______ in the park.”（請勿在公園裡亂丟垃圾），空格應填入哪個字？",
+                options: [
+                    "litter",
+                    "rubbish",
+                    "dump",
+                    "skylight"
+                ],
+                answerIndex: 0,
+                explanation: "✅ 正確答案是 litter！do not 後面需要接原形「動詞」，litter 除了當名詞「垃圾」外，還可以當動詞「亂丟垃圾」；rubbish 只能當名詞。"
+            },
+            {
+                id: 4,
+                question: "4. 句子 “We went to a hot spring last winter.” 中的 spring 是什麼意思？",
+                options: [
+                    "春天",
+                    "彈簧",
+                    "泉水（溫泉）",
+                    "天窗"
+                ],
+                answerIndex: 2,
+                explanation: "✅ 正確答案是「泉水（溫泉）」！hot spring 是常見片語「溫泉」，從後面的 last winter（去年冬天）也可以判斷不是指春天。"
+            }
+        ];
+
+        // 2. 全域狀態管理
+        let soundEnabled = true;
+        let autoSpeakEnabled = true;
+        let currentPage = 'home'; // 'home' | 'vocab' | 'def' | 'grammar'
+        let currentVocabSubMode = 'quiz'; // 'quiz' | 'match' | 'list'
+
+        // 模組 1：單字四選一測驗狀態
+        let quizPool = [];
+        let currentQuizIndex = 0;
+        let quizScore = 0;
+        let quizCombo = 0;
+        let quizCorrectCount = 0;
+        let quizAnsweredCount = 0;
+        let isQuestionAnswered = false;
+        let mistakeList = [];
+        let isMistakeOnlyMode = false;
+        let autoNextTimer = null;
+
+        // 模組 1：消消樂狀態
+        let matchRoundCount = 1;
+        let matchItems = [];
+        let selectedEnId = null;
+        let selectedZhId = null;
+        let matchedIds = new Set();
+        let matchUnusedPool = [];
+
+        // 模組 2：英文定義測驗狀態
+        let defPool = [];
+        let currentDefIndex = 0;
+        let defScore = 0;
+        let defCorrectCount = 0;
+        let defAnsweredCount = 0;
+        let isDefAnswered = false;
+        let defMistakeList = [];
+        let defAutoTimer = null;
+
+        // 3. Web Audio API 音效合成器
+        const AudioEngine = {
+            ctx: null,
+            init() {
+                if (!this.ctx) {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    if (AudioContext) this.ctx = new AudioContext();
+                }
+                if (this.ctx && this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+            },
+            playCorrect() {
+                if (!soundEnabled) return;
+                try {
+                    this.init();
+                    if (!this.ctx) return;
+                    const now = this.ctx.currentTime;
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(523.25, now);
+                    osc.frequency.setValueAtTime(659.25, now + 0.08);
+                    osc.frequency.setValueAtTime(783.99, now + 0.16);
+
+                    gain.gain.setValueAtTime(0.18, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.4);
+                } catch (e) { console.warn("Audio error:", e); }
+            },
+            playWrong() {
+                if (!soundEnabled) return;
+                try {
+                    this.init();
+                    if (!this.ctx) return;
+                    const now = this.ctx.currentTime;
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(220, now);
+                    osc.frequency.linearRampToValueAtTime(165, now + 0.25);
+
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.3);
+                } catch (e) { console.warn("Audio error:", e); }
+            },
+            playWin() {
+                if (!soundEnabled) return;
+                try {
+                    this.init();
+                    if (!this.ctx) return;
+                    const notes = [523.25, 659.25, 783.99, 1046.50];
+                    notes.forEach((freq, idx) => {
+                        const now = this.ctx.currentTime + idx * 0.1;
+                        const osc = this.ctx.createOscillator();
+                        const gain = this.ctx.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(freq, now);
+                        gain.gain.setValueAtTime(0.16, now);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+                        osc.connect(gain);
+                        gain.connect(this.ctx.destination);
+                        osc.start(now);
+                        osc.stop(now + 0.35);
+                    });
+                } catch (e) { console.warn("Audio error:", e); }
+            }
+        };
+
+        // 4. Web Speech API 英語語音發音
+        function speakWord(text, rate = 0.92) {
+            if (!('speechSynthesis' in window)) return;
+            try {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'en-US';
+                utterance.rate = rate;
+                window.speechSynthesis.speak(utterance);
+            } catch (e) {
+                console.warn("Speech synthesis error:", e);
+            }
+        }
+
+        function speakCurrentWord() {
+            if (quizPool[currentQuizIndex]) {
+                speakWord(quizPool[currentQuizIndex].en);
+            }
+        }
+
+        function speakCurrentDef() {
+            if (defPool[currentDefIndex]) {
+                speakWord(defPool[currentDefIndex].def, 0.9);
+            }
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('icon-sound-on').classList.toggle('hidden', !soundEnabled);
+            document.getElementById('icon-sound-off').classList.toggle('hidden', soundEnabled);
+            document.getElementById('label-sound').textContent = soundEnabled ? '音效開' : '靜音';
+            if (soundEnabled) AudioEngine.playCorrect();
+        }
+
+        function toggleAutoSpeak() {
+            autoSpeakEnabled = !autoSpeakEnabled;
+            const dot = document.getElementById('auto-speak-dot');
+            const text = document.getElementById('auto-speak-text');
+            if (autoSpeakEnabled) {
+                dot.className = "w-2 h-2 rounded-full bg-emerald-500";
+                text.textContent = "自動發音: 開";
+                speakCurrentWord();
+            } else {
+                dot.className = "w-2 h-2 rounded-full bg-slate-400";
+                text.textContent = "自動發音: 關";
+                if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+            }
+        }
+
+        function shuffleArray(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        // 5. SPA 頁面導覽切換 (首頁 <-> 三大功能模組)
+        function navigateTo(page) {
+            currentPage = page;
+            if (autoNextTimer) clearTimeout(autoNextTimer);
+            if (defAutoTimer) clearTimeout(defAutoTimer);
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+
+            // 隱藏所有主頁面
+            ['home', 'vocab', 'def', 'grammar'].forEach(p => {
+                document.getElementById(`page-${p}`).classList.add('hidden');
+            });
+
+            // 顯示目標頁面
+            document.getElementById(`page-${page}`).classList.remove('hidden');
+
+            // 更新頂部導覽列狀態
+            const backBtn = document.getElementById('btn-back-home');
+            const badge = document.getElementById('nav-current-badge');
+
+            if (page === 'home') {
+                backBtn.classList.add('hidden');
+                badge.textContent = "🎠 園區大廳";
+            } else {
+                backBtn.classList.remove('hidden');
+                if (page === 'vocab') {
+                    badge.textContent = "🎠 1. 單字先背好";
+                    if (quizPool.length === 0) {
+                        switchVocabSubMode('quiz');
+                    }
+                } else if (page === 'def') {
+                    badge.textContent = "🎢 2. 看英文意思選中文";
+                    if (defPool.length === 0) {
+                        startDefQuiz(false);
+                    }
+                } else if (page === 'grammar') {
+                    badge.textContent = "🏰 3. 文法重點區";
+                    renderGrammarQuiz();
+                }
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ==========================================
+        // 6. 模組 1：單字先背好（子分頁與測驗邏輯）
+        // ==========================================
+        function switchVocabSubMode(mode) {
+            currentVocabSubMode = mode;
+            if (autoNextTimer) clearTimeout(autoNextTimer);
+
+            const tabs = ['quiz', 'match', 'list'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                if (t === mode) {
+                    btn.className = "px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all bg-white text-emerald-600 shadow-sm";
+                } else {
+                    btn.className = "px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all text-slate-600 hover:text-slate-900";
+                }
+            });
+
+            document.getElementById('view-quiz').classList.add('hidden');
+            document.getElementById('view-result').classList.add('hidden');
+            document.getElementById('view-match').classList.add('hidden');
+            document.getElementById('view-list').classList.add('hidden');
+
+            if (mode === 'quiz') {
+                document.getElementById('view-quiz').classList.remove('hidden');
+                if (quizPool.length === 0) startQuiz(false);
+            } else if (mode === 'match') {
+                document.getElementById('view-match').classList.remove('hidden');
+                if (matchItems.length === 0) initMatchRound(true);
+            } else if (mode === 'list') {
+                document.getElementById('view-list').classList.remove('hidden');
+                renderVocabList();
+            }
+        }
+
+        function startQuiz(mistakeOnly = false) {
+            if (autoNextTimer) clearTimeout(autoNextTimer);
+            isMistakeOnlyMode = mistakeOnly;
+
+            if (mistakeOnly && mistakeList.length > 0) {
+                quizPool = shuffleArray(mistakeList);
+            } else {
+                isMistakeOnlyMode = false;
+                quizPool = shuffleArray(VOCABULARY);
+            }
+
+            currentQuizIndex = 0;
+            quizScore = 0;
+            quizCombo = 0;
+            quizCorrectCount = 0;
+            quizAnsweredCount = 0;
+            mistakeList = [];
+
+            document.getElementById('view-result').classList.add('hidden');
+            document.getElementById('view-quiz').classList.remove('hidden');
+
+            const badge = document.getElementById('quiz-mode-badge');
+            if (isMistakeOnlyMode) {
+                badge.textContent = "🎯 錯題集中複習";
+                badge.className = "px-2.5 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-700";
+            } else {
+                badge.textContent = "📘 全部單字測驗";
+                badge.className = "px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700";
+            }
+
+            updateQuizStatsUI();
+            renderQuestion();
+        }
+
+        function updateQuizStatsUI() {
+            const total = quizPool.length;
+            const currentDisplay = Math.min(currentQuizIndex + 1, total);
+            document.getElementById('quiz-progress-text').textContent = `${currentDisplay} / ${total}`;
+            document.getElementById('quiz-q-num').textContent = `#${String(currentDisplay).padStart(2, '0')}`;
+            
+            const percent = (currentQuizIndex / total) * 100;
+            document.getElementById('quiz-progress-bar').style.width = `${percent}%`;
+
+            document.getElementById('quiz-combo').textContent = quizCombo;
+            document.getElementById('quiz-score').textContent = quizScore;
+
+            const acc = quizAnsweredCount === 0 ? 100 : Math.round((quizCorrectCount / quizAnsweredCount) * 100);
+            document.getElementById('quiz-accuracy').textContent = `${acc}%`;
+        }
+
+        function renderQuestion() {
+            isQuestionAnswered = false;
+            const item = quizPool[currentQuizIndex];
+            const card = document.getElementById('quiz-card');
+            card.classList.remove('animate-shake');
+
+            document.getElementById('quiz-word').textContent = item.en;
+            const posEl = document.getElementById('quiz-pos');
+            if (item.pos) {
+                posEl.textContent = item.pos;
+                posEl.classList.remove('hidden');
+            } else {
+                posEl.classList.add('hidden');
+            }
+
+            const feedbackEl = document.getElementById('quiz-feedback');
+            feedbackEl.className = "min-h-[2.25rem] mb-4 flex items-center justify-center text-sm sm:text-base font-bold rounded-xl px-4 py-1.5 transition-all opacity-0";
+            feedbackEl.textContent = "";
+            document.getElementById('btn-next-question').classList.add('hidden');
+
+            // 產生 4 個中文不重複的選項
+            const distractorsPool = VOCABULARY.filter(v => v.zh !== item.zh);
+            const uniqueDistractors = [];
+            const usedZh = new Set([item.zh]);
+            for (const candidate of shuffleArray(distractorsPool)) {
+                if (!usedZh.has(candidate.zh)) {
+                    usedZh.add(candidate.zh);
+                    uniqueDistractors.push(candidate);
+                }
+                if (uniqueDistractors.length === 3) break;
+            }
+
+            const options = shuffleArray([item, ...uniqueDistractors]);
+            const optionsContainer = document.getElementById('quiz-options');
+            optionsContainer.innerHTML = '';
+
+            options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.dataset.zh = opt.zh;
+                btn.dataset.isCorrect = (opt.zh === item.zh) ? 'true' : 'false';
+                btn.className = "vocab-option-btn w-full p-4 sm:p-5 rounded-2xl border-2 border-slate-200 bg-white hover:border-emerald-400 hover:bg-emerald-50/50 text-left flex items-center gap-3.5 transition-all btn-press shadow-sm group";
+                
+                btn.innerHTML = `
+                    <span class="w-8 h-8 rounded-xl bg-slate-100 group-hover:bg-emerald-100 text-slate-600 group-hover:text-emerald-700 font-extrabold text-sm flex items-center justify-center shrink-0 transition-colors">
+                        ${idx + 1}
+                    </span>
+                    <span class="font-bold text-base sm:text-lg text-slate-800 leading-snug">
+                        ${opt.zh}
+                    </span>
+                `;
+
+                btn.onclick = () => handleOptionSelect(btn, opt);
+                optionsContainer.appendChild(btn);
+            });
+
+            if (autoSpeakEnabled && currentPage === 'vocab' && currentVocabSubMode === 'quiz') {
+                setTimeout(() => speakWord(item.en), 150);
+            }
+        }
+
+        function handleOptionSelect(selectedBtn, selectedOption) {
+            if (isQuestionAnswered) return;
+            isQuestionAnswered = true;
+            quizAnsweredCount++;
+
+            const currentItem = quizPool[currentQuizIndex];
+            const isCorrect = selectedOption.zh === currentItem.zh;
+            const feedbackEl = document.getElementById('quiz-feedback');
+            const allBtns = document.querySelectorAll('.vocab-option-btn');
+
+            allBtns.forEach(btn => {
+                btn.disabled = true;
+                btn.classList.remove('hover:border-emerald-400', 'hover:bg-emerald-50/50', 'btn-press');
+            });
+
+            if (isCorrect) {
+                quizCorrectCount++;
+                quizCombo++;
+                const bonus = Math.min(quizCombo * 10, 50);
+                quizScore += (100 + bonus);
+
+                AudioEngine.playCorrect();
+
+                selectedBtn.className = "vocab-option-btn w-full p-4 sm:p-5 rounded-2xl border-2 border-emerald-500 bg-emerald-50 text-left flex items-center gap-3.5 shadow-md animate-pop";
+                selectedBtn.querySelector('span:first-child').className = "w-8 h-8 rounded-xl bg-emerald-500 text-white font-extrabold text-sm flex items-center justify-center shrink-0";
+                selectedBtn.querySelector('span:first-child').textContent = "✓";
+
+                feedbackEl.textContent = quizCombo > 1 
+                    ? `✨ 答對了！連擊 ${quizCombo} 次 (+${100 + bonus} 分)` 
+                    : `✨ 答對了！(+100 分)`;
+                feedbackEl.className = "min-h-[2.25rem] mb-4 flex items-center justify-center text-sm sm:text-base font-bold rounded-xl px-4 py-1.5 bg-emerald-100 text-emerald-800 opacity-100";
+
+                updateQuizStatsUI();
+
+                autoNextTimer = setTimeout(() => {
+                    nextQuestion();
+                }, 900);
+
+            } else {
+                quizCombo = 0;
+                AudioEngine.playWrong();
+
+                if (!mistakeList.some(m => m.id === currentItem.id)) {
+                    mistakeList.push(currentItem);
+                }
+
+                const card = document.getElementById('quiz-card');
+                card.classList.remove('animate-shake');
+                void card.offsetWidth;
+                card.classList.add('animate-shake');
+
+                selectedBtn.className = "vocab-option-btn w-full p-4 sm:p-5 rounded-2xl border-2 border-rose-500 bg-rose-50 text-left flex items-center gap-3.5";
+                selectedBtn.querySelector('span:first-child').className = "w-8 h-8 rounded-xl bg-rose-500 text-white font-extrabold text-sm flex items-center justify-center shrink-0";
+                selectedBtn.querySelector('span:first-child').textContent = "✕";
+
+                allBtns.forEach(btn => {
+                    if (btn.dataset.isCorrect === 'true') {
+                        btn.className = "vocab-option-btn w-full p-4 sm:p-5 rounded-2xl border-2 border-emerald-500 bg-emerald-50 text-left flex items-center gap-3.5 shadow-sm";
+                        btn.querySelector('span:first-child').className = "w-8 h-8 rounded-xl bg-emerald-500 text-white font-extrabold text-sm flex items-center justify-center shrink-0";
+                        btn.querySelector('span:first-child').textContent = "✓";
+                    }
+                });
+
+                feedbackEl.innerHTML = `❌ 答錯了！正確意思為：<span class="underline ml-1">${currentItem.zh}</span>`;
+                feedbackEl.className = "min-h-[2.25rem] mb-4 flex items-center justify-center text-sm sm:text-base font-bold rounded-xl px-4 py-1.5 bg-rose-100 text-rose-800 opacity-100";
+
+                updateQuizStatsUI();
+
+                document.getElementById('btn-next-question').classList.remove('hidden');
+                autoNextTimer = setTimeout(() => {
+                    nextQuestion();
+                }, 2200);
+            }
+        }
+
+        function nextQuestion() {
+            if (autoNextTimer) clearTimeout(autoNextTimer);
+            currentQuizIndex++;
+            if (currentQuizIndex < quizPool.length) {
+                updateQuizStatsUI();
+                renderQuestion();
+            } else {
+                showQuizResult();
+            }
+        }
+
+        function showQuizResult() {
+            AudioEngine.playWin();
+            document.getElementById('quiz-progress-bar').style.width = '100%';
+            document.getElementById('view-quiz').classList.add('hidden');
+            document.getElementById('view-result').classList.remove('hidden');
+
+            const total = quizPool.length;
+            const acc = Math.round((quizCorrectCount / total) * 100);
+
+            document.getElementById('result-score').textContent = quizScore;
+            document.getElementById('result-correct-count').textContent = `${quizCorrectCount} / ${total}`;
+            document.getElementById('result-accuracy').textContent = `${acc}%`;
+
+            const mistakesSection = document.getElementById('result-mistakes-section');
+            const mistakesListEl = document.getElementById('result-mistakes-list');
+            const retryMistakesBtn = document.getElementById('btn-retry-mistakes');
+            const perfectBanner = document.getElementById('result-perfect-banner');
+
+            if (mistakeList.length > 0) {
+                mistakesSection.classList.remove('hidden');
+                retryMistakesBtn.classList.remove('hidden');
+                perfectBanner.classList.add('hidden');
+                document.getElementById('result-mistake-badge').textContent = `${mistakeList.length} 題`;
+
+                mistakesListEl.innerHTML = mistakeList.map(m => `
+                    <div class="p-3.5 flex items-center justify-between gap-3 hover:bg-rose-100/40 transition-colors">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="font-bold text-slate-900 text-base">${m.en}</span>
+                                ${m.pos ? `<span class="text-xs px-1.5 py-0.5 rounded bg-white text-teal-600 font-semibold border border-teal-100">${m.pos}</span>` : ''}
+                            </div>
+                            <div class="text-sm text-rose-700 font-medium mt-0.5">${m.zh}</div>
+                        </div>
+                        <button onclick="speakWord('${m.en.replace(/'/g, "\\'")}')" class="p-2 rounded-xl bg-white hover:bg-emerald-50 text-emerald-600 border border-slate-200 shadow-sm btn-press" title="朗讀發音">
+                            🔊
+                        </button>
+                    </div>
+                `).join('');
+            } else {
+                mistakesSection.classList.add('hidden');
+                retryMistakesBtn.classList.add('hidden');
+                perfectBanner.classList.remove('hidden');
+            }
+        }
+
+        // ==========================================
+        // 7. 模組 1 (B)：消消樂配對模式邏輯
+        // ==========================================
+        function initMatchRound(resetPool = false) {
+            if (resetPool || matchUnusedPool.length < 5) {
+                matchUnusedPool = shuffleArray(VOCABULARY);
+                if (resetPool) matchRoundCount = 1;
+            } else {
+                matchRoundCount++;
+            }
+
+            // 抽取 5 個「中文意思互不相同」的單字（避免 dump 與 rubbish dump 同時出現造成混淆）
+            const picked = [];
+            const usedZh = new Set();
+            const remaining = [];
+
+            for (const item of matchUnusedPool) {
+                if (picked.length < 5 && !usedZh.has(item.zh)) {
+                    picked.push(item);
+                    usedZh.add(item.zh);
+                } else {
+                    remaining.push(item);
+                }
+            }
+            matchUnusedPool = remaining;
+            matchItems = picked;
+
+            selectedEnId = null;
+            selectedZhId = null;
+            matchedIds.clear();
+
+            document.getElementById('match-round-badge').textContent = `第 ${matchRoundCount} 回合`;
+            document.getElementById('match-progress').textContent = `0 / 5 組`;
+            document.getElementById('match-complete-box').classList.add('hidden');
+            setMatchToast("請選擇一張英文卡片與一張中文卡片進行配對", "info");
+
+            renderMatchBoard();
+        }
+
+        function setMatchToast(msg, type = "info") {
+            const toast = document.getElementById('match-toast');
+            toast.textContent = msg;
+            if (type === "success") {
+                toast.className = "mb-4 text-center text-sm font-bold py-2 px-4 rounded-xl bg-emerald-100 text-emerald-800 border border-emerald-200 transition-all";
+            } else if (type === "error") {
+                toast.className = "mb-4 text-center text-sm font-bold py-2 px-4 rounded-xl bg-rose-100 text-rose-800 border border-rose-200 transition-all";
+            } else {
+                toast.className = "mb-4 text-center text-sm font-bold py-2 px-4 rounded-xl bg-sky-50 text-sky-700 border border-sky-100 transition-all";
+            }
+        }
+
+        function renderMatchBoard() {
+            const enCol = document.getElementById('match-en-col');
+            const zhCol = document.getElementById('match-zh-col');
+
+            const enList = shuffleArray(matchItems);
+            const zhList = shuffleArray(matchItems);
+
+            enCol.innerHTML = '';
+            zhCol.innerHTML = '';
+
+            enList.forEach(item => {
+                const btn = document.createElement('button');
+                btn.id = `match-en-${item.id}`;
+                btn.type = 'button';
+                btn.className = "w-full min-h-[4.25rem] p-3 sm:p-4 rounded-2xl border-2 border-slate-200 bg-white hover:border-emerald-400 font-bold text-slate-800 text-sm sm:text-base shadow-sm transition-all btn-press flex flex-col items-center justify-center text-center";
+                btn.innerHTML = `
+                    <span>${item.en}</span>
+                    ${item.pos ? `<span class="text-xs font-normal text-teal-600 mt-0.5">${item.pos}</span>` : ''}
+                `;
+                btn.onclick = () => handleMatchClick('en', item);
+                enCol.appendChild(btn);
+            });
+
+            zhList.forEach(item => {
+                const btn = document.createElement('button');
+                btn.id = `match-zh-${item.id}`;
+                btn.type = 'button';
+                btn.className = "w-full min-h-[4.25rem] p-3 sm:p-4 rounded-2xl border-2 border-slate-200 bg-white hover:border-emerald-400 font-bold text-slate-700 text-sm sm:text-base shadow-sm transition-all btn-press flex items-center justify-center text-center";
+                btn.textContent = item.zh;
+                btn.onclick = () => handleMatchClick('zh', item);
+                zhCol.appendChild(btn);
+            });
+        }
+
+        function handleMatchClick(side, item) {
+            if (matchedIds.has(item.id)) return;
+
+            if (side === 'en') {
+                speakWord(item.en);
+                if (selectedEnId !== null) {
+                    const prevBtn = document.getElementById(`match-en-${selectedEnId}`);
+                    if (prevBtn && !matchedIds.has(selectedEnId)) {
+                        prevBtn.classList.remove('border-emerald-600', 'bg-emerald-50', 'ring-2', 'ring-emerald-200');
+                        prevBtn.classList.add('border-slate-200', 'bg-white');
+                    }
+                }
+                selectedEnId = item.id;
+                const currBtn = document.getElementById(`match-en-${item.id}`);
+                currBtn.classList.remove('border-slate-200', 'bg-white');
+                currBtn.classList.add('border-emerald-600', 'bg-emerald-50', 'ring-2', 'ring-emerald-200');
+            } else {
+                if (selectedZhId !== null) {
+                    const prevBtn = document.getElementById(`match-zh-${selectedZhId}`);
+                    if (prevBtn && !matchedIds.has(selectedZhId)) {
+                        prevBtn.classList.remove('border-emerald-600', 'bg-emerald-50', 'ring-2', 'ring-emerald-200');
+                        prevBtn.classList.add('border-slate-200', 'bg-white');
+                    }
+                }
+                selectedZhId = item.id;
+                const currBtn = document.getElementById(`match-zh-${item.id}`);
+                currBtn.classList.remove('border-slate-200', 'bg-white');
+                currBtn.classList.add('border-emerald-600', 'bg-emerald-50', 'ring-2', 'ring-emerald-200');
+            }
+
+            if (selectedEnId !== null && selectedZhId !== null) {
+                const enBtn = document.getElementById(`match-en-${selectedEnId}`);
+                const zhBtn = document.getElementById(`match-zh-${selectedZhId}`);
+
+                if (selectedEnId === selectedZhId) {
+                    AudioEngine.playCorrect();
+                    matchedIds.add(selectedEnId);
+
+                    [enBtn, zhBtn].forEach(b => {
+                        b.disabled = true;
+                        b.className = "w-full min-h-[4.25rem] p-3 sm:p-4 rounded-2xl border-2 border-emerald-400 bg-emerald-50 text-emerald-700 font-bold text-sm sm:text-base opacity-60 scale-95 transition-all flex flex-col items-center justify-center text-center cursor-default";
+                    });
+
+                    document.getElementById('match-progress').textContent = `${matchedIds.size} / 5 組`;
+                    setMatchToast(`✅ 配對成功！${item.en} = ${item.zh}`, "success");
+
+                    selectedEnId = null;
+                    selectedZhId = null;
+
+                    if (matchedIds.size === 5) {
+                        AudioEngine.playWin();
+                        document.getElementById('match-complete-box').classList.remove('hidden');
+                    }
+                } else {
+                    AudioEngine.playWrong();
+                    setMatchToast("❌ 配對不正確，請再試一次！", "error");
+
+                    const tempEn = enBtn;
+                    const tempZh = zhBtn;
+                    selectedEnId = null;
+                    selectedZhId = null;
+
+                    [tempEn, tempZh].forEach(b => {
+                        b.classList.remove('border-emerald-600', 'bg-emerald-50', 'ring-2', 'ring-emerald-200');
+                        b.classList.add('border-rose-500', 'bg-rose-50', 'animate-shake');
+                    });
+
+                    setTimeout(() => {
+                        [tempEn, tempZh].forEach(b => {
+                            if (b && !b.disabled) {
+                                b.classList.remove('border-rose-500', 'bg-rose-50', 'animate-shake');
+                                b.classList.add('border-slate-200', 'bg-white');
+                            }
+                        });
+                    }, 500);
+                }
+            }
+        }
+
+        // ==========================================
+        // 8. 模組 1 (C)：單字總覽表邏輯
+        // ==========================================
+        function renderVocabList() {
+            const keyword = document.getElementById('search-vocab').value.trim().toLowerCase();
+            const grid = document.getElementById('vocab-grid');
+
+            const filtered = VOCABULARY.filter(v => 
+                v.en.toLowerCase().includes(keyword) || 
+                v.zh.includes(keyword)
+            );
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-10 text-slate-400 font-bold">找不到符合「${keyword}」的單字</div>`;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(v => `
+                <div onclick="speakWord('${v.en.replace(/'/g, "\\'")}')" class="bg-white rounded-2xl p-4 card-shadow border border-slate-100 hover:border-emerald-300 transition-all cursor-pointer btn-press flex items-center justify-between gap-3 group">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-bold text-slate-400">#${String(v.id).padStart(2, '0')}</span>
+                            <h4 class="font-extrabold text-lg text-slate-800 group-hover:text-emerald-600 transition-colors">${v.en}</h4>
+                            ${v.pos ? `<span class="px-2 py-0.5 rounded bg-teal-50 text-teal-700 text-xs font-bold">${v.pos}</span>` : ''}
+                        </div>
+                        <p class="text-slate-600 font-medium text-sm mt-1">${v.zh}</p>
+                    </div>
+                    <button type="button" class="p-2.5 rounded-xl bg-emerald-50 group-hover:bg-emerald-600 text-emerald-600 group-hover:text-white transition-colors shrink-0" aria-label="朗讀發音">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                        </svg>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        // ==========================================
+        // 9. 模組 2：看英文意思選中文 (英文定義測驗邏輯)
+        // ==========================================
+        function startDefQuiz(mistakeOnly = false) {
+            if (defAutoTimer) clearTimeout(defAutoTimer);
+
+            if (mistakeOnly && defMistakeList.length > 0) {
+                defPool = shuffleArray(defMistakeList);
+            } else {
+                defPool = shuffleArray(VOCABULARY);
+            }
+
+            currentDefIndex = 0;
+            defScore = 0;
+            defCorrectCount = 0;
+            defAnsweredCount = 0;
+            defMistakeList = [];
+
+            document.getElementById('def-result-view').classList.add('hidden');
+            document.getElementById('def-quiz-view').classList.remove('hidden');
+
+            const badge = document.getElementById('def-mode-badge');
+            if (mistakeOnly) {
+                badge.textContent = "🎯 定義錯題複習";
+                badge.className = "px-2.5 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-700";
+            } else {
+                badge.textContent = "📖 全部英文定義";
+                badge.className = "px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800";
+            }
+
+            updateDefStatsUI();
+            renderDefQuestion();
+        }
+
+        function updateDefStatsUI() {
+            const total = defPool.length;
+            const currentDisplay = Math.min(currentDefIndex + 1, total);
+            document.getElementById('def-progress-text').textContent = `${currentDisplay} / ${total}`;
+            document.getElementById('def-q-num').textContent = `#${String(currentDisplay).padStart(2, '0')}`;
+            document.getElementById('def-score').textContent = defScore;
+
+            const percent = (currentDefIndex / total) * 100;
+            document.getElementById('def-progress-bar').style.width = `${percent}%`;
+        }
+
+        function renderDefQuestion() {
+            isDefAnswered = false;
+            const item = defPool[currentDefIndex];
+            const card = document.getElementById('def-quiz-view');
+            card.classList.remove('animate-shake');
+
+            document.getElementById('def-clue-text').textContent = `"${item.def}"`;
+            const posHint = document.getElementById('def-pos-hint');
+            if (item.pos) {
+                posHint.textContent = `詞性提示: ${item.pos}`;
+                posHint.classList.remove('hidden');
+            } else {
+                posHint.classList.add('hidden');
+            }
+
+            const feedbackEl = document.getElementById('def-feedback');
+            feedbackEl.className = "min-h-[3.25rem] mb-4 flex flex-col items-center justify-center text-sm sm:text-base font-bold rounded-2xl px-4 py-2.5 transition-all opacity-0 max-w-2xl mx-auto";
+            feedbackEl.innerHTML = "";
+            document.getElementById('btn-def-next').classList.add('hidden');
+
+            // 產生 4 個中文不重複的選項
+            const distractorsPool = VOCABULARY.filter(v => v.zh !== item.zh);
+            const uniqueDistractors = [];
+            const usedZh = new Set([item.zh]);
+            for (const candidate of shuffleArray(distractorsPool)) {
+                if (!usedZh.has(candidate.zh)) {
+                    usedZh.add(candidate.zh);
+                    uniqueDistractors.push(candidate);
+                }
+                if (uniqueDistractors.length === 3) break;
+            }
+
+            const options = shuffleArray([item, ...uniqueDistractors]);
+            const optionsContainer = document.getElementById('def-options');
+            optionsContainer.innerHTML = '';
+
+            options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.dataset.isCorrect = (opt.zh === item.zh) ? 'true' : 'false';
+                btn.className = "def-option-btn w-full p-4 sm:p-5 rounded-2xl border-2 border-slate-200 bg-white hover:border-amber-400 hover:bg-amber-50/50 text-left flex items-center gap-3.5 transition-all btn-press shadow-sm group";
+                
+                btn.innerHTML = `
+                    <span class="w-8 h-8 rounded-xl bg-slate-100 group-hover:bg-amber-100 text-slate-600 group-hover:text-amber-700 font-extrabold text-sm flex items-center justify-center shrink-0 transition-colors">
+                        ${idx + 1}
+                    </span>
+                    <span class="font-bold text-base sm:text-lg text-slate-800 leading-snug">
+                        ${opt.zh}
+                    </span>
+                `;
+
+                btn.onclick = () => handleDefOptionSelect(btn, opt);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function handleDefOptionSelect(selectedBtn, selectedOption) {
+            if (isDefAnswered) return;
+            isDefAnswered = true;
+            defAnsweredCount++;
+
+            const currentItem = defPool[currentDefIndex];
+            const isCorrect = selectedOption.zh === currentItem.zh;
+            const feedbackEl = document.getElementById('def-feedback');
+            const allBtns = document.querySelectorAll('.def-option-btn');
+
+            allBtns.forEach(btn => {
+                btn.disabled = true;
+                btn.classList.remove('hover:border-amber-400', 'hover:bg-amber-50/50', 'btn-press');
+            });
+
+            // 朗讀對應的英文單字幫助記憶
+            speakWord(currentItem.en);
+
+            if (isCorrect) {
+                defCorrectCount++;
+                defScore += 100;
+                AudioEngine.playCorrect();
+
+                selectedBtn.className = "def-option-btn w-full p-4 sm:p-5 rounded-2xl border-2 border-emerald-500 bg-emerald-50 text-left flex items-center gap-3.5 shadow-md animate-pop";
+                selectedBtn.querySelector('span:first-child').className = "w-8 h-8 rounded-xl bg-emerald-500 text-white font-extrabold text-sm flex items-center justify-center shrink-0";
+                selectedBtn.querySelector('span:first-child').textContent = "✓";
+
+                feedbackEl.innerHTML = `
+                    <div class="text-emerald-800">✨ 答對了！這個英文解釋指的是 <span class="underline font-black text-emerald-950">${currentItem.en}</span>（${currentItem.zh}）</div>
+                `;
+                feedbackEl.className = "min-h-[3.25rem] mb-4 flex flex-col items-center justify-center text-sm sm:text-base font-bold rounded-2xl px-4 py-2.5 bg-emerald-100 border border-emerald-200 opacity-100 max-w-2xl mx-auto";
+
+                updateDefStatsUI();
+                document.getElementById('btn-def-next').classList.remove('hidden');
+
+                defAutoTimer = setTimeout(() => {
+                    nextDefQuestion();
+                }, 1500);
+
+            } else {
+                AudioEngine.playWrong();
+
+                if (!defMistakeList.some(m => m.id === currentItem.id)) {
+                    defMistakeList.push(currentItem);
+                }
+
+                const card = document.getElementById('def-quiz-view');
+                card.classList.remove('animate-shake');
+                void card.offsetWidth;
+                card.classList.add('animate-shake');
+
+                selectedBtn.className = "def-option-btn w-full p-4 sm:p-5 rounded-2xl border-2 border-rose-500 bg-rose-50 text-left flex items-center gap-3.5";
+                selectedBtn.querySelector('span:first-child').className = "w-8 h-8 rounded-xl bg-rose-500 text-white font-extrabold text-sm flex items-center justify-center shrink-0";
+                selectedBtn.querySelector('span:first-child').textContent = "✕";
+
+                allBtns.forEach(btn => {
+                    if (btn.dataset.isCorrect === 'true') {
+                        btn.className = "def-option-btn w-full p-4 sm:p-5 rounded-2xl border-2 border-emerald-500 bg-emerald-50 text-left flex items-center gap-3.5 shadow-sm";
+                        btn.querySelector('span:first-child').className = "w-8 h-8 rounded-xl bg-emerald-500 text-white font-extrabold text-sm flex items-center justify-center shrink-0";
+                        btn.querySelector('span:first-child').textContent = "✓";
+                    }
+                });
+
+                feedbackEl.innerHTML = `
+                    <div class="text-rose-800">❌ 答錯囉！這段英文是在描述 <span class="underline font-black text-rose-950">${currentItem.en}</span>（${currentItem.zh}）</div>
+                `;
+                feedbackEl.className = "min-h-[3.25rem] mb-4 flex flex-col items-center justify-center text-sm sm:text-base font-bold rounded-2xl px-4 py-2.5 bg-rose-100 border border-rose-200 opacity-100 max-w-2xl mx-auto";
+
+                updateDefStatsUI();
+                document.getElementById('btn-def-next').classList.remove('hidden');
+
+                defAutoTimer = setTimeout(() => {
+                    nextDefQuestion();
+                }, 2600);
+            }
+        }
+
+        function nextDefQuestion() {
+            if (defAutoTimer) clearTimeout(defAutoTimer);
+            currentDefIndex++;
+            if (currentDefIndex < defPool.length) {
+                updateDefStatsUI();
+                renderDefQuestion();
+            } else {
+                showDefResult();
+            }
+        }
+
+        function showDefResult() {
+            AudioEngine.playWin();
+            document.getElementById('def-progress-bar').style.width = '100%';
+            document.getElementById('def-quiz-view').classList.add('hidden');
+            document.getElementById('def-result-view').classList.remove('hidden');
+
+            const total = defPool.length;
+            const acc = Math.round((defCorrectCount / total) * 100);
+
+            document.getElementById('def-result-score').textContent = defScore;
+            document.getElementById('def-result-correct').textContent = `${defCorrectCount} / ${total}`;
+            document.getElementById('def-result-acc').textContent = `${acc}%`;
+
+            const mistakesSection = document.getElementById('def-mistakes-section');
+            const mistakesListEl = document.getElementById('def-mistakes-list');
+            const retryBtn = document.getElementById('btn-def-retry-mistakes');
+            const perfectBanner = document.getElementById('def-perfect-banner');
+
+            if (defMistakeList.length > 0) {
+                mistakesSection.classList.remove('hidden');
+                retryBtn.classList.remove('hidden');
+                perfectBanner.classList.add('hidden');
+                document.getElementById('def-mistake-badge').textContent = `${defMistakeList.length} 題`;
+
+                mistakesListEl.innerHTML = defMistakeList.map(m => `
+                    <div class="p-4 flex items-start justify-between gap-3 hover:bg-rose-100/40 transition-colors">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="font-extrabold text-slate-900 text-base">${m.en}</span>
+                                <span class="text-sm font-bold text-rose-700">（${m.zh}）</span>
+                            </div>
+                            <p class="text-xs sm:text-sm text-slate-600 mt-1 italic">"${m.def}"</p>
+                        </div>
+                        <button onclick="speakWord('${m.en.replace(/'/g, "\\'")}')" class="p-2 rounded-xl bg-white hover:bg-amber-50 text-amber-600 border border-slate-200 shadow-sm btn-press shrink-0" title="朗讀單字">
+                            🔊
+                        </button>
+                    </div>
+                `).join('');
+            } else {
+                mistakesSection.classList.add('hidden');
+                retryBtn.classList.add('hidden');
+                perfectBanner.classList.remove('hidden');
+            }
+        }
+
+        // ==========================================
+        // 10. 模組 3：文法重點區隨堂小測驗邏輯
+        // ==========================================
+        function renderGrammarQuiz() {
+            const container = document.getElementById('grammar-quiz-container');
+            container.innerHTML = GRAMMAR_QUESTIONS.map((q, qIdx) => `
+                <div id="gq-card-${q.id}" class="p-4 sm:p-5 rounded-2xl bg-slate-50/80 border border-slate-200">
+                    <p class="font-bold text-slate-800 text-sm sm:text-base mb-3.5">${q.question}</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                        ${q.options.map((opt, oIdx) => `
+                            <button type="button" onclick="handleGrammarAnswer(${q.id}, ${oIdx})" id="gq-${q.id}-opt-${oIdx}" class="gq-opt-${q.id} text-left px-4 py-3 rounded-xl bg-white border border-slate-200 hover:border-indigo-400 hover:bg-indigo-50/40 font-semibold text-sm text-slate-700 transition-all btn-press flex items-center gap-2.5">
+                                <span class="w-6 h-6 rounded-lg bg-slate-100 text-slate-600 text-xs font-extrabold flex items-center justify-center shrink-0">
+                                    ${['A', 'B', 'C', 'D'][oIdx]}
+                                </span>
+                                <span>${opt}</span>
+                            </button>
+                        `).join('')}
+                    </div>
+                    <div id="gq-exp-${q.id}" class="hidden mt-3.5 p-3.5 rounded-xl text-xs sm:text-sm font-medium leading-relaxed"></div>
+                </div>
+            `).join('');
+        }
+
+        function handleGrammarAnswer(qId, selectedIdx) {
+            const q = GRAMMAR_QUESTIONS.find(item => item.id === qId);
+            if (!q) return;
+
+            const btns = document.querySelectorAll(`.gq-opt-${qId}`);
+            btns.forEach(b => {
+                b.disabled = true;
+                b.classList.remove('hover:border-indigo-400', 'hover:bg-indigo-50/40', 'btn-press');
+            });
+
+            const expEl = document.getElementById(`gq-exp-${qId}`);
+            const selectedBtn = document.getElementById(`gq-${qId}-opt-${selectedIdx}`);
+            const correctBtn = document.getElementById(`gq-${qId}-opt-${q.answerIndex}`);
+
+            if (selectedIdx === q.answerIndex) {
+                AudioEngine.playCorrect();
+                selectedBtn.className = "text-left px-4 py-3 rounded-xl bg-emerald-50 border-2 border-emerald-500 font-bold text-sm text-emerald-900 flex items-center gap-2.5";
+                expEl.className = "mt-3.5 p-3.5 rounded-xl text-xs sm:text-sm font-semibold leading-relaxed bg-emerald-100/80 text-emerald-900 border border-emerald-200 animate-fade-in";
+                expEl.textContent = q.explanation;
+            } else {
+                AudioEngine.playWrong();
+                selectedBtn.className = "text-left px-4 py-3 rounded-xl bg-rose-50 border-2 border-rose-500 font-bold text-sm text-rose-900 flex items-center gap-2.5 animate-shake";
+                correctBtn.className = "text-left px-4 py-3 rounded-xl bg-emerald-50 border-2 border-emerald-500 font-bold text-sm text-emerald-900 flex items-center gap-2.5";
+                expEl.className = "mt-3.5 p-3.5 rounded-xl text-xs sm:text-sm font-semibold leading-relaxed bg-rose-100/80 text-rose-900 border border-rose-200 animate-fade-in";
+                expEl.textContent = "❌ 再想一下喔！" + q.explanation;
+            }
+        }
+
+        function resetGrammarQuiz() {
+            renderGrammarQuiz();
+        }
+
+        // 11. 鍵盤快捷鍵支援 (方便電腦版學生作答)
+        document.addEventListener('keydown', (e) => {
+            if (document.activeElement.tagName === 'INPUT') return;
+
+            // 模組 1：單字四選一模式快捷鍵
+            if (currentPage === 'vocab' && currentVocabSubMode === 'quiz' && !document.getElementById('view-quiz').classList.contains('hidden')) {
+                if (['1', '2', '3', '4'].includes(e.key)) {
+                    const idx = parseInt(e.key, 10) - 1;
+                    const btns = document.querySelectorAll('.vocab-option-btn');
+                    if (btns[idx] && !btns[idx].disabled) btns[idx].click();
+                } else if (e.key.toLowerCase() === 's' || e.code === 'Space') {
+                    e.preventDefault();
+                    speakCurrentWord();
+                } else if (e.key === 'Enter' && isQuestionAnswered) {
+                    nextQuestion();
+                }
+            }
+
+            // 模組 2：英文定義測驗快捷鍵
+            if (currentPage === 'def' && !document.getElementById('def-quiz-view').classList.contains('hidden')) {
+                if (['1', '2', '3', '4'].includes(e.key)) {
+                    const idx = parseInt(e.key, 10) - 1;
+                    const btns = document.querySelectorAll('.def-option-btn');
+                    if (btns[idx] && !btns[idx].disabled) btns[idx].click();
+                } else if (e.key.toLowerCase() === 's' || e.code === 'Space') {
+                    e.preventDefault();
+                    speakCurrentDef();
+                } else if (e.key === 'Enter' && isDefAnswered) {
+                    nextDefQuestion();
+                }
+            }
+        });
+
+        // 網頁載入後預設停留在「英文遊樂園」主首頁
+        window.addEventListener('DOMContentLoaded', () => {
+            navigateTo('home');
+        });
+    </script>
+</body>
+</html>
